@@ -20,8 +20,11 @@
 //Define LED Pin 
 #define LED 13
 
-//Define Primary Voltage Correctio
+//Define Primary Voltage Correction
 #define PrimaryCorrect 0.0653
+
+//Define scalling for motor Current
+#define MotorCurrentCorrect .0820 
 
 //Create the Radio
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
@@ -148,7 +151,7 @@ void loop() // run over and over again
       uint8_t data[120];
 
       //Create Output sting
-      String FinalString= String(GPS.hour)+":"+String(GPS.minute)+":"+String(GPS.seconds)+ " " + String((adc0*PrimaryCorrect),4)+ ", " + String(adc1) + ", " + String(adc2) + ", "+ String(adc3) + ", "+ String(GPS.latitude,4) + String(GPS.lat) + ", " + String(GPS.longitude,4) + String(GPS.lon) + ", " + String(GPS.speed);
+      String FinalString= String(GPS.hour)+":"+String(GPS.minute)+":"+String(GPS.seconds)+ ", " + String((adc0*PrimaryCorrect),4)+ ", " + String((adc1*PrimaryCorrect),4) + ", " + String((adc2*MotorCurrentCorrect),4) + ", "+ String(adc3) + ", "+ String(GPS.latitude,4) + String(GPS.lat) + ", " + String(GPS.longitude,4) + String(GPS.lon) + ", " + String(GPS.speed);
  
     //convert output sting to bytes (uint8_t) that can be transmitted
      FinalString.toCharArray(data, FinalString.length());
@@ -159,9 +162,7 @@ void loop() // run over and over again
     GPS.fix =false ;
     
     }
-   
-   
-   GPS.lastNMEA(); // this also sets the newNMEAreceived() flag to false   
+  
    if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
       return; // we can fail to parse a sentence in which case we should just wait for another
   }
